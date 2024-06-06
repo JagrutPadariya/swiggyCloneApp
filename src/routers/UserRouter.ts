@@ -19,7 +19,7 @@ class UserRouter {
     this.router.get(
       "/send/verification/email",
       UserValidators.verifyUserForResendEmail(),
-      
+      UserController.resendVerificationEmail
     );
   }
 
