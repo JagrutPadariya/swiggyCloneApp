@@ -26,13 +26,13 @@ export class UserController {
 
     try {
       let user = await new User(data).save();
+      res.send(user);
       // send email to user for verification
       await NodeMailer.sendMail({
         to: [email],
         subject: "test",
         html: `<h1>Your Otp is ${verification_token}</h1>`,
       });
-      res.send(user);
     } catch (e) {
       next(e);
     }
