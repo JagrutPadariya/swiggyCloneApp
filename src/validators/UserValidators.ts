@@ -1,6 +1,5 @@
 import { body, query } from "express-validator";
 import User from "../models/User";
-import { transcode } from "buffer";
 
 export class UserValidators {
   static signup() {
@@ -14,7 +13,7 @@ export class UserValidators {
             .then((user) => {
               if (user) {
                 // throw new Error("User Already Exists");
-                throw("User Already Exists");
+                throw "User Already Exists";
               } else {
                 return true;
               }
@@ -46,5 +45,30 @@ export class UserValidators {
 
   static verifyUserForResendEmail() {
     return [query("email", "Email is required").isEmail()];
+  }
+
+  static login() {
+    return [
+      query("email", "Email is required")
+        .isEmail()
+        .custom((email, { req }) => {
+          return User.findOne({
+            email: email,
+          })
+            .then((user) => {
+              if (user) {
+                req.user = user;
+                return true;
+              } else {
+                // throw new Error("No User Registered with such Email");
+                throw "No User Registered with such Email";
+              }
+            })
+            .catch((e) => {
+              throw new Error(e);
+            });
+        }),
+      query("password", "Password is required").isAlphanumeric(),
+    ];
   }
 }
