@@ -61,6 +61,7 @@ export class UserController {
         },
         {
           email_verified: true,
+          updated_at: new Date(),
         },
         {
           new: true,
@@ -70,7 +71,7 @@ export class UserController {
         res.send(user);
       } else {
         throw new Error(
-          "Email Verification Token Is Expired. Please try again..."
+          "Wrong Otp or Email Verification Token Is Expired. Please try again..."
         );
       }
     } catch (e) {
@@ -87,17 +88,18 @@ export class UserController {
           email: email,
         },
         {
+          updated_at: new Date(),
           verification_token: verification_token,
           verification_token_time: Date.now() + new Utils().MAX_TOKEN_TIME,
         }
       );
       if (user) {
+        res.json({ success: true });
         await NodeMailer.sendMail({
           to: [user.email],
           subject: "Resend Email Verification",
           html: `<h1>Your Otp is ${verification_token}</h1>`,
         });
-        res.json({ success: true });
       } else {
         throw new Error("User doesn't exist");
       }
@@ -124,6 +126,70 @@ export class UserController {
         token: token,
         user: user,
       });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async sendResetPasswordOtp(req, res, next) {
+    const email = req.query.email;
+    const reset_password_token = Utils.generateVerificationToken();
+    try {
+      const user = await User.findOneAndUpdate(
+        {
+          email: email,
+        },
+        {
+          updated_at: new Date(),
+          reset_password_token: reset_password_token,
+          reset_password_token_time: Date.now() + new Utils().MAX_TOKEN_TIME,
+        }
+      );
+      if (user) {
+        res.json({ success: true });
+        await NodeMailer.sendMail({
+          to: [user.email],
+          subject: "Reset Password Email Verification OTP",
+          html: `<h1>Your Otp is ${reset_password_token}</h1>`,
+        });
+      } else {
+        throw new Error("User doesn't exist");
+      }
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async verifyResetPasswordToken(req, res, next) {
+    try {
+      res.json({ success: true });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async resetPassword(req, res, next) {
+    const user = req.user;
+    const new_password = req.body.new_password;
+    try {
+      const encryptedPassword = await Utils.encryptPassword(new_password);
+      const updatedUser = await User.findOneAndUpdate(
+        {
+          _id: user._id,
+        },
+        {
+          updated_at: new Date(),
+          password: encryptedPassword,
+        },
+        {
+          new: true,
+        }
+      );
+      if (updatedUser) {
+        res.send(updatedUser);
+      } else {
+        throw new Error("User doesn't exist");
+      }
     } catch (e) {
       next(e);
     }

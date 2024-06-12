@@ -66,4 +66,89 @@ export class UserValidators {
       query("password", "Password is required").isAlphanumeric(),
     ];
   }
+
+  static checkResetPasswordEmail() {
+    return [
+      query("email", "Email is required")
+        .isEmail()
+        .custom((email, { req }) => {
+          return User.findOne({
+            email: email,
+          })
+            .then((user) => {
+              if (user) {
+                return true;
+              } else {
+                // throw new Error("No User Registered with such Email");
+                throw "No User Registered with such Email";
+              }
+            })
+            .catch((e) => {
+              throw new Error(e);
+            });
+        }),
+    ];
+  }
+
+  static verifyResetPasswordToken() {
+    return [
+      query("email", "Email is required").isEmail(),
+      query("reset_password_token", "Reset password token is required")
+        .isNumeric()
+        .custom((reset_password_token, { req }) => {
+          return User.findOne({
+            email: req.query.email,
+            reset_password_token: reset_password_token,
+            reset_password_token_time: { $gt: Date.now() },
+          })
+            .then((user) => {
+              if (user) {
+                return true;
+              } else {
+                // throw new Error("Reset password token doesn't exist. Please regenerate a new token.");
+                throw "Reset password token doesn't exist. Please regenerate a new token.";
+              }
+            })
+            .catch((e) => {
+              throw new Error(e);
+            });
+        }),
+    ];
+  }
+
+  static resetPassword() {
+    return [
+      body("email", "Email is required")
+        .isEmail()
+        .custom((email, { req }) => {
+          return User.findOne({
+            email: email,
+          })
+            .then((user) => {
+              if (user) {
+                req.user = user;
+                return true;
+              } else {
+                // throw new Error("No User Registered with such Email");
+                throw "No User Registered with such Email";
+              }
+            })
+            .catch((e) => {
+              throw new Error(e);
+            });
+        }),
+      body("new_password", "New password is required").isAlphanumeric(),
+      body("otp", "Reset password token is required")
+        .isNumeric()
+        .custom((reset_password_token, { req }) => {
+          if (req.user.reset_password_token == reset_password_token) {
+            return true;
+          } else {
+            req.errorStatus = 422;
+            // throw new Error("Reset password token is invalid, please try again");
+            throw "Reset password token is invalid, please try again";
+          }
+        }),
+    ];
+  }
 }
