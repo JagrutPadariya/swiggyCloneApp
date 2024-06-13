@@ -110,7 +110,7 @@ export class UserController {
 
   static async login(req, res, next) {
     const user = req.user;
-    const password = req.query.password;
+    const password = req.body.password;
     const data = {
       password,
       encrypt_password: user.password,
