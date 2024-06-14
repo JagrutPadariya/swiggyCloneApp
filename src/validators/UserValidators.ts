@@ -151,4 +151,33 @@ export class UserValidators {
         }),
     ];
   }
+
+  static verifyPhoneNumber() {
+    return [body("phone", "Phone is required").isString()];
+  }
+
+  static verifyUserProfile() {
+    return [
+      body("phone", "Phone is required").isString(),
+      body("email", "Email is required")
+        .isEmail()
+        .custom((email, { req }) => {
+          return User.findOne({
+            email: email,
+          })
+            .then((user) => {
+              if (user) {
+                // throw new Error("A User with entered email already exist, please provide a unique email id");
+                throw "A User with entered email already exist, please provide a unique email id";
+              } else {
+                return true;
+              }
+            })
+            .catch((e) => {
+              throw new Error(e);
+            });
+        }),
+      body("password", "Password is required").isAlphanumeric(),
+    ];
+  }
 }

@@ -34,7 +34,6 @@ export class UserController {
         email: user.email,
       };
       const token = Jwt.jwtSign(payload);
-      // console.log(token);
       res.json({
         token: token,
         user: user,
@@ -186,6 +185,80 @@ export class UserController {
       } else {
         throw new Error("User doesn't exist");
       }
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async profile(req, res, next) {
+    const user = req.user;
+    try {
+      const profile = await User.findById(user.aud);
+      if (profile) {
+        res.send(profile);
+      } else {
+        throw new Error("User doesn't exist");
+      }
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async updatePhoneNumber(req, res, next) {
+    const user = req.user;
+    const phone = req.body.phone;
+    try {
+      const userData = await User.findByIdAndUpdate(
+        user.aud,
+        { phone: phone, updated_at: new Date() },
+        { new: true }
+      );
+      res.send(userData);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async updateUserProfile(req, res, next) {
+    const user = req.user;
+    const phone = req.body.phone;
+    const new_email = req.body.email;
+    const plain_password = req.body.password;
+    const verification_token = Utils.generateVerificationToken();
+    try {
+      const userData = await User.findById(user.aud);
+      if (!userData) throw new Error("User doesn't exist");
+      await Utils.comparePassword({
+        password: plain_password,
+        encrypt_password: userData.password,
+      });
+      const updatedUser = await User.findByIdAndUpdate(
+        user.aud,
+        {
+          phone: phone,
+          email: new_email,
+          email_verified: false,
+          verification_token,
+          verification_token_time: Date.now() + new Utils().MAX_TOKEN_TIME,
+          updated_at: new Date(),
+        },
+        { new: true }
+      );
+      const payload = {
+        aud: user.aud,
+        email: updatedUser.email,
+      };
+      const token = Jwt.jwtSign(payload);
+      res.json({
+        token: token,
+        user: updatedUser,
+      });
+      // send email to user for updated email verification
+      await NodeMailer.sendMail({
+        to: [updatedUser.email],
+        subject: "Email Verification",
+        html: `<h1>Your Otp is ${verification_token}</h1>`,
+      });
     } catch (e) {
       next(e);
     }

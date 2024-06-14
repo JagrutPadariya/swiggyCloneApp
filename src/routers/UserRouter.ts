@@ -39,6 +39,11 @@ class UserRouter {
       GlobalMiddleWare.checkError,
       UserController.verifyResetPasswordToken
     );
+    this.router.get(
+      "/profile",
+      GlobalMiddleWare.auth,
+      UserController.profile
+    );
   }
 
   postRoutes() {
@@ -63,6 +68,20 @@ class UserRouter {
       UserValidators.verifyUserEmailToken(),
       GlobalMiddleWare.checkError,
       UserController.verifyUserEmailToken
+    );
+    this.router.patch(
+      "/update/phone",
+      GlobalMiddleWare.auth,
+      UserValidators.verifyPhoneNumber(),
+      GlobalMiddleWare.checkError,
+      UserController.updatePhoneNumber
+    );
+    this.router.patch(
+      "/update/profile",
+      GlobalMiddleWare.auth,
+      UserValidators.verifyUserProfile(),
+      GlobalMiddleWare.checkError,
+      UserController.updateUserProfile
     );
   }
 
