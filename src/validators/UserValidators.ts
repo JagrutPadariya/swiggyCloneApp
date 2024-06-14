@@ -33,7 +33,7 @@ export class UserValidators {
     ];
   }
 
-  static verifyUser() {
+  static verifyUserEmailToken() {
     return [
       body(
         "verification_token",
@@ -138,7 +138,7 @@ export class UserValidators {
             });
         }),
       body("new_password", "New password is required").isAlphanumeric(),
-      body("otp", "Reset password token is required")
+      body("reset_password_token", "Reset password token is required")
         .isNumeric()
         .custom((reset_password_token, { req }) => {
           if (req.user.reset_password_token == reset_password_token) {

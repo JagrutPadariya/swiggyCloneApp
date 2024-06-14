@@ -29,7 +29,8 @@ export class UserController {
       };
       let user = await new User(data).save();
       const payload = {
-        user_id: user._id,
+        // user_id: user._id,
+        aud: user._id,
         email: user.email,
       };
       const token = Jwt.jwtSign(payload);
@@ -49,7 +50,7 @@ export class UserController {
     }
   }
 
-  static async verify(req, res, next) {
+  static async verifyUserEmailToken(req, res, next) {
     const verification_token = req.body.verification_token;
     const email = req.user.email;
     try {
@@ -118,7 +119,8 @@ export class UserController {
     try {
       await Utils.comparePassword(data);
       const payload = {
-        user_id: user._id,
+        // user_id: user._id,
+        aud: user._id,
         email: user.email,
       };
       const token = Jwt.jwtSign(payload);
@@ -160,12 +162,8 @@ export class UserController {
     }
   }
 
-  static async verifyResetPasswordToken(req, res, next) {
-    try {
-      res.json({ success: true });
-    } catch (e) {
-      next(e);
-    }
+  static verifyResetPasswordToken(req, res, next) {
+    res.json({ success: true });
   }
 
   static async resetPassword(req, res, next) {
@@ -173,10 +171,8 @@ export class UserController {
     const new_password = req.body.new_password;
     try {
       const encryptedPassword = await Utils.encryptPassword(new_password);
-      const updatedUser = await User.findOneAndUpdate(
-        {
-          _id: user._id,
-        },
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
         {
           updated_at: new Date(),
           password: encryptedPassword,

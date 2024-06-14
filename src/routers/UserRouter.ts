@@ -58,11 +58,11 @@ class UserRouter {
       UserController.resetPassword
     );
     this.router.patch(
-      "/verify",
-      UserValidators.verifyUser(),
-      GlobalMiddleWare.checkError,
+      "/verify/emailToken",
       GlobalMiddleWare.auth,
-      UserController.verify
+      UserValidators.verifyUserEmailToken(),
+      GlobalMiddleWare.checkError,
+      UserController.verifyUserEmailToken
     );
   }
 
