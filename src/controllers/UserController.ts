@@ -32,6 +32,7 @@ export class UserController {
         // user_id: user._id,
         aud: user._id,
         email: user.email,
+        type: user.type,
       };
       const token = Jwt.jwtSign(payload);
       res.json({
@@ -121,6 +122,7 @@ export class UserController {
         // user_id: user._id,
         aud: user._id,
         email: user.email,
+        type: user.type,
       };
       const token = Jwt.jwtSign(payload);
       res.json({
@@ -247,6 +249,7 @@ export class UserController {
       const payload = {
         aud: user.aud,
         email: updatedUser.email,
+        type: updatedUser.type,
       };
       const token = Jwt.jwtSign(payload);
       res.json({

@@ -1,4 +1,4 @@
-import { body, query } from "express-validator";
+import { body, query, ValidationChain } from "express-validator";
 import User from "../models/User";
 
 export class UserValidators {
@@ -90,7 +90,7 @@ export class UserValidators {
     ];
   }
 
-  static verifyResetPasswordToken() {
+  static verifyResetPasswordToken(): ValidationChain[] {
     return [
       query("email", "Email is required").isEmail(),
       query("reset_password_token", "Reset password token is required")
@@ -162,6 +162,9 @@ export class UserValidators {
       body("email", "Email is required")
         .isEmail()
         .custom((email, { req }) => {
+          // console.log(req.user.email);
+          // if (req.user.email == email)
+          //   throw "Please provide a new unique Email Address to update the User Profile";
           return User.findOne({
             email: email,
           })

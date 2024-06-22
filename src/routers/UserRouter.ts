@@ -22,12 +22,6 @@ class UserRouter {
       UserController.resendVerificationEmail
     );
     this.router.get(
-      "/login",
-      UserValidators.login(),
-      GlobalMiddleWare.checkError,
-      UserController.login
-    );
-    this.router.get(
       "/send/reset/password/token",
       UserValidators.checkResetPasswordEmail(),
       GlobalMiddleWare.checkError,
@@ -47,6 +41,12 @@ class UserRouter {
   }
 
   postRoutes() {
+    this.router.post(
+      "/login",
+      UserValidators.login(),
+      GlobalMiddleWare.checkError,
+      UserController.login
+    );
     this.router.post(
       "/signup",
       UserValidators.signup(),
