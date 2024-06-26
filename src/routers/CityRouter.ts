@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { GlobalMiddleWare } from "../middlewares/GlobalMiddleWare";
-import { Utils } from "../utils/Utils";
 import { CityController } from "../controllers/CityController";
 import { CityValidators } from "../validators/CityValidators";
 
@@ -24,6 +23,7 @@ class CityRouter {
     this.router.post(
       "/",
       CityValidators.addCity(),
+      GlobalMiddleWare.checkError,
       CityController.addCity
     );
   }

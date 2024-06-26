@@ -2,13 +2,19 @@ import City from "../models/City";
 
 export class CityController {
   static async addCity(req, res, next) {
-    const path = req.file.path;
+    const name = req.body.name;
+    const lat = req.body.lat;
+    const lng = req.body.lng;
+    const status = req.body.status;
     try {
       const data = {
-        banner: path,
+        name,
+        lat,
+        lng,
+        status,
       };
-      const banner = await new City(data).save();
-      res.send(banner);
+      const city = await new City(data).save();
+      res.send(city);
     } catch (e) {
       next(e);
     }
@@ -16,7 +22,7 @@ export class CityController {
 
   static async getCities(req, res, next) {
     try {
-      const cities = await City.find({status: true})
+      const cities = await City.find({ status: "active" });
       res.send(cities);
     } catch (e) {
       next(e);
