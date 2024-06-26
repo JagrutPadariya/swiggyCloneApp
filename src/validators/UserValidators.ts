@@ -2,7 +2,7 @@ import { body, query, ValidationChain } from "express-validator";
 import User from "../models/User";
 
 export class UserValidators {
-  static signup() {
+  static signup(): ValidationChain[] {
     return [
       body("email", "Email is required")
         .isEmail()
@@ -33,7 +33,7 @@ export class UserValidators {
     ];
   }
 
-  static verifyUserEmailToken() {
+  static verifyUserEmailToken(): ValidationChain[] {
     return [
       body(
         "verification_token",
@@ -42,7 +42,7 @@ export class UserValidators {
     ];
   }
 
-  static login() {
+  static login(): ValidationChain[] {
     return [
       body("email", "Email is required")
         .isEmail()
@@ -67,7 +67,7 @@ export class UserValidators {
     ];
   }
 
-  static checkResetPasswordEmail() {
+  static checkResetPasswordEmail(): ValidationChain[] {
     return [
       query("email", "Email is required")
         .isEmail()
@@ -116,7 +116,7 @@ export class UserValidators {
     ];
   }
 
-  static resetPassword() {
+  static resetPassword(): ValidationChain[] {
     return [
       body("email", "Email is required")
         .isEmail()
@@ -152,11 +152,11 @@ export class UserValidators {
     ];
   }
 
-  static verifyPhoneNumber() {
+  static verifyPhoneNumber(): ValidationChain[] {
     return [body("phone", "Phone is required").isString()];
   }
 
-  static verifyUserProfile() {
+  static verifyUserProfile(): ValidationChain[] {
     return [
       body("phone", "Phone is required").isString(),
       body("email", "Email is required")

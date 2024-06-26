@@ -2,9 +2,10 @@ import User from "../models/User";
 import { Jwt } from "../utils/Jwt";
 import { NodeMailer } from "../utils/NodeMailer";
 import { Utils } from "../utils/Utils";
+import { Request, Response, NextFunction } from 'express';
 
 export class UserController {
-  static async signup(req, res, next) {
+  static async signup(req : Request, res : Response, next : NextFunction ) {
     console.log("req: ", req);
     const email = req.body.email;
     const phone = req.body.phone;
