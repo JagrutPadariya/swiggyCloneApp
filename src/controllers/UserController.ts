@@ -2,10 +2,10 @@ import User from "../models/User";
 import { Jwt } from "../utils/Jwt";
 import { NodeMailer } from "../utils/NodeMailer";
 import { Utils } from "../utils/Utils";
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 
 export class UserController {
-  static async signup(req : Request, res : Response, next : NextFunction ) {
+  static async signup(req: Request, res: Response, next: NextFunction) {
     console.log("req: ", req);
     const email = req.body.email;
     const phone = req.body.phone;
@@ -51,7 +51,11 @@ export class UserController {
     }
   }
 
-  static async verifyUserEmailToken(req, res, next) {
+  static async verifyUserEmailToken(
+    req: any,
+    res: Response,
+    next: NextFunction
+  ) {
     const verification_token = req.body.verification_token;
     const email = req.user.email;
     try {
@@ -81,7 +85,11 @@ export class UserController {
     }
   }
 
-  static async resendVerificationEmail(req, res, next) {
+  static async resendVerificationEmail(
+    req: any,
+    res: Response,
+    next: NextFunction
+  ) {
     const email = req.user.email;
     const verification_token = Utils.generateVerificationToken();
     try {
@@ -110,7 +118,7 @@ export class UserController {
     }
   }
 
-  static async login(req, res, next) {
+  static async login(req: any, res: Response, next: NextFunction) {
     const user = req.user;
     const password = req.body.password;
     const data = {
@@ -135,7 +143,11 @@ export class UserController {
     }
   }
 
-  static async sendResetPasswordOtp(req, res, next) {
+  static async sendResetPasswordOtp(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const email = req.query.email;
     const reset_password_token = Utils.generateVerificationToken();
     try {
@@ -164,11 +176,11 @@ export class UserController {
     }
   }
 
-  static verifyResetPasswordToken(req, res, next) {
+  static verifyResetPasswordToken(req, res: Response, next) {
     res.json({ success: true });
   }
 
-  static async resetPassword(req, res, next) {
+  static async resetPassword(req: any, res: Response, next: NextFunction) {
     const user = req.user;
     const new_password = req.body.new_password;
     try {
@@ -193,7 +205,7 @@ export class UserController {
     }
   }
 
-  static async profile(req, res, next) {
+  static async profile(req: any, res: Response, next: NextFunction) {
     const user = req.user;
     try {
       const profile = await User.findById(user.aud);
@@ -207,7 +219,7 @@ export class UserController {
     }
   }
 
-  static async updatePhoneNumber(req, res, next) {
+  static async updatePhoneNumber(req: any, res: Response, next: NextFunction) {
     const user = req.user;
     const phone = req.body.phone;
     try {
@@ -222,7 +234,7 @@ export class UserController {
     }
   }
 
-  static async updateUserProfile(req, res, next) {
+  static async updateUserProfile(req: any, res: Response, next: NextFunction) {
     const user = req.user;
     const phone = req.body.phone;
     const new_email = req.body.email;
