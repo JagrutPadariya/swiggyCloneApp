@@ -52,12 +52,12 @@ export class UserController {
   }
 
   static async verifyUserEmailToken(
-    req: any,
+    req: Request,
     res: Response,
     next: NextFunction
   ) {
     const verification_token = req.body.verification_token;
-    const email = req.user.email;
+    const email = (req as any).user.email;
     try {
       const user = await User.findOneAndUpdate(
         {
@@ -86,11 +86,11 @@ export class UserController {
   }
 
   static async resendVerificationEmail(
-    req: any,
+    req: Request,
     res: Response,
     next: NextFunction
   ) {
-    const email = req.user.email;
+    const email = (req as any).user.email;
     const verification_token = Utils.generateVerificationToken();
     try {
       const user = await User.findOneAndUpdate(
@@ -118,8 +118,8 @@ export class UserController {
     }
   }
 
-  static async login(req: any, res: Response, next: NextFunction) {
-    const user = req.user;
+  static async login(req: Request, res: Response, next: NextFunction) {
+    const user = (req as any).user;
     const password = req.body.password;
     const data = {
       password,
@@ -180,8 +180,8 @@ export class UserController {
     res.json({ success: true });
   }
 
-  static async resetPassword(req: any, res: Response, next: NextFunction) {
-    const user = req.user;
+  static async resetPassword(req: Request, res: Response, next: NextFunction) {
+    const user = (req as any).user;
     const new_password = req.body.new_password;
     try {
       const encryptedPassword = await Utils.encryptPassword(new_password);
@@ -205,8 +205,8 @@ export class UserController {
     }
   }
 
-  static async profile(req: any, res: Response, next: NextFunction) {
-    const user = req.user;
+  static async profile(req: Request, res: Response, next: NextFunction) {
+    const user = (req as any).user;
     try {
       const profile = await User.findById(user.aud);
       if (profile) {
@@ -219,8 +219,12 @@ export class UserController {
     }
   }
 
-  static async updatePhoneNumber(req: any, res: Response, next: NextFunction) {
-    const user = req.user;
+  static async updatePhoneNumber(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const user = (req as any).user;
     const phone = req.body.phone;
     try {
       const userData = await User.findByIdAndUpdate(
@@ -234,8 +238,12 @@ export class UserController {
     }
   }
 
-  static async updateUserProfile(req: any, res: Response, next: NextFunction) {
-    const user = req.user;
+  static async updateUserProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const user = (req as any).user;
     const phone = req.body.phone;
     const new_email = req.body.email;
     const plain_password = req.body.password;
