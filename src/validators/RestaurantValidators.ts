@@ -1,4 +1,4 @@
-import { body, ValidationChain } from "express-validator";
+import { query, body, ValidationChain } from "express-validator";
 import User from "../models/User";
 
 export class RestaurantValidators {
@@ -27,13 +27,15 @@ export class RestaurantValidators {
         .isAlphanumeric()
         .isLength({ min: 8, max: 25 })
         .withMessage("Password must be between 8-20 characters"),
-      body("cover", "cover image is required").custom((cover, { req }) => {
-        if (req.file) {
-          return true;
-        } else {
-          throw "File not uploaded";
+      body("restaurantImages", "Cover image is required").custom(
+        (cover, { req }) => {
+          if (req.file) {
+            return true;
+          } else {
+            throw "File not uploaded";
+          }
         }
-      }),
+      ),
       body("res_name", "Restaurant Name is required").isString(),
       body("short_name", "Restaurant Short Name is required").isString(),
       body("open_time", "Opening time is required").isString(),
@@ -45,6 +47,23 @@ export class RestaurantValidators {
       body("location", "Location is required").isString(),
       body("cuisines", "Cuisines is required").isString(),
       body("city_id", "City is required").isString(),
+    ];
+  }
+
+  static getNearbyRestaurants(): ValidationChain[] {
+    return [
+      query("lat", "Latitude is required").isNumeric(),
+      query("lng", "Longitude is required").isNumeric(),
+      query("radius", "Radius is required").isNumeric(),
+    ];
+  }
+
+  static searchNearbyRestaurants(): ValidationChain[] {
+    return [
+      query("name", "Search query is required").isString(),
+      query("lat", "Latitude is required").isNumeric(),
+      query("lng", "Longitude is required").isNumeric(),
+      query("radius", "Radius is required").isNumeric(),
     ];
   }
 }

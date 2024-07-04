@@ -176,7 +176,11 @@ export class UserController {
     }
   }
 
-  static verifyResetPasswordToken(req, res: Response, next) {
+  static verifyResetPasswordToken(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     res.json({ success: true });
   }
 

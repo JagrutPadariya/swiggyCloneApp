@@ -1,7 +1,8 @@
+import { Request, Response, NextFunction } from "express";
 import Banner from "../models/Banner";
 
 export class BannerController {
-  static async addBanner(req, res, next) {
+  static async addBanner(req: Request, res: Response, next: NextFunction) {
     const path = req.file.path;
     try {
       const data = {
@@ -14,9 +15,9 @@ export class BannerController {
     }
   }
 
-  static async getBanners(req, res, next) {
+  static async getBanners(req: Request, res: Response, next: NextFunction) {
     try {
-      const banners = await Banner.find({status: true})
+      const banners = await Banner.find({ status: true });
       res.send(banners);
     } catch (e) {
       next(e);

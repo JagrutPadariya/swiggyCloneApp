@@ -25,7 +25,7 @@ class BannerRouter {
       "/",
       GlobalMiddleWare.auth,
       GlobalMiddleWare.adminRole,
-      new Utils().multer.single("banner"),
+      new Utils().multer.single("bannerImages"),
       BannerValidators.addBanner(),
       BannerController.addBanner
     );

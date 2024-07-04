@@ -18,9 +18,18 @@ class RestaurantRouter {
 
   getRoutes() {
     this.router.get(
-      "/",
+      "/nearbyRestaurants",
       GlobalMiddleWare.auth,
-      RestaurantController.getRestaurants
+      RestaurantValidators.getNearbyRestaurants(),
+      GlobalMiddleWare.checkError,
+      RestaurantController.getNearbyRestaurants
+    );
+    this.router.get(
+      "/searchNearbyRestaurants",
+      GlobalMiddleWare.auth,
+      RestaurantValidators.searchNearbyRestaurants(),
+      GlobalMiddleWare.checkError,
+      RestaurantController.searchNearbyRestaurants
     );
   }
 
@@ -29,7 +38,7 @@ class RestaurantRouter {
       "/",
       GlobalMiddleWare.auth,
       GlobalMiddleWare.adminRole,
-      new Utils().multer.single("cover"),
+      new Utils().multer.single("restaurantImages"),
       RestaurantValidators.addRestaurant(),
       GlobalMiddleWare.checkError,
       RestaurantController.addRestaurant
