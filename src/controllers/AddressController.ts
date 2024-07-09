@@ -1,9 +1,10 @@
 import Address from "../models/Address";
+import { Request, Response, NextFunction } from "express";
 
 export class AddressController {
-  static async addAddress(req, res, next) {
+  static async addAddress(req: Request, res: Response, next: NextFunction) {
     const data = req.body;
-    const user_id = req.user.aud;
+    const user_id = (req as any).user.aud;
     try {
       const addressData = {
         user_id,
@@ -15,8 +16,6 @@ export class AddressController {
         lng: data.lng,
       };
       const address = await new Address(addressData).save();
-      // delete address.user_id;
-      // delete address.__v;
       const response_address = {
         title: address.title,
         address: address.address,
@@ -33,8 +32,12 @@ export class AddressController {
     }
   }
 
-  static async getUserAddresses(req, res, next) {
-    const user_id = req.user.aud;
+  static async getUserAddresses(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const user_id = (req as any).user.aud;
     try {
       const addresses = await Address.find({ user_id }, { user_id: 0, __v: 0 });
       res.send(addresses);
@@ -43,9 +46,13 @@ export class AddressController {
     }
   }
 
-  static async getUserLimitedAddresses(req, res, next) {
-    const user_id = req.user.aud;
-    const limit = req.query.limit;
+  static async getUserLimitedAddresses(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const user_id = (req as any).user.aud;
+    const limit = (req as any).query.limit;
     try {
       const addresses = await Address.find(
         { user_id },
@@ -57,8 +64,8 @@ export class AddressController {
     }
   }
 
-  static async deleteAddress(req, res, next) {
-    const user_id = req.user.aud;
+  static async deleteAddress(req: Request, res: Response, next: NextFunction) {
+    const user_id = (req as any).user.aud;
     const id = req.params.id;
     try {
       await Address.findOneAndDelete({
@@ -71,8 +78,8 @@ export class AddressController {
     }
   }
 
-  static async getAddressById(req, res, next) {
-    const user_id = req.user.aud;
+  static async getAddressById(req: Request, res: Response, next: NextFunction) {
+    const user_id = (req as any).user.aud;
     const id = req.params.id;
     try {
       const address = await Address.findOne(
@@ -88,8 +95,8 @@ export class AddressController {
     }
   }
 
-  static async editAddress(req, res, next) {
-    const user_id = req.user.aud;
+  static async editAddress(req: Request, res: Response, next: NextFunction) {
+    const user_id = (req as any).user.aud;
     const id = req.params.id;
     const data = req.body;
     try {
@@ -120,8 +127,8 @@ export class AddressController {
     }
   }
 
-  static async checkAddress(req, res, next) {
-    const user_id = req.user.aud;
+  static async checkAddress(req: Request, res: Response, next: NextFunction) {
+    const user_id = (req as any).user.aud;
     const data = req.query;
     try {
       const address = await Address.findOne(

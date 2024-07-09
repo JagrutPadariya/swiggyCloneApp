@@ -55,7 +55,7 @@ export class ItemValidators {
     ];
   }
 
-  static getMenuItems() {
+  static getMenuItems(): ValidationChain[] {
     return [
       param("restaurantId", "Restaurant Id is required")
         .isString()
