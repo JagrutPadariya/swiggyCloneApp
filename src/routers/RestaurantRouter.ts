@@ -18,6 +18,12 @@ class RestaurantRouter {
 
   getRoutes() {
     this.router.get(
+      "/",
+      GlobalMiddleWare.auth,
+      GlobalMiddleWare.adminRole,
+      RestaurantController.getRestaurants
+    );
+    this.router.get(
       "/nearbyRestaurants",
       GlobalMiddleWare.auth,
       RestaurantValidators.getNearbyRestaurants(),
