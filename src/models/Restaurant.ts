@@ -25,4 +25,4 @@ const restaurantSchema = new mongoose.Schema({
 
 // restaurantSchema.index({ location: "2dsphere" }, { background: true });
 
-export default model("restaurant", restaurantSchema);
+export default model("restaurants", restaurantSchema);

@@ -16,6 +16,8 @@ export class AddressController {
         lng: data.lng,
       };
       const address = await new Address(addressData).save();
+      // delete address.user_id;
+      // delete address.__v;
       const response_address = {
         title: address.title,
         address: address.address,
