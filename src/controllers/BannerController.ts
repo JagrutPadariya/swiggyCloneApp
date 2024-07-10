@@ -5,9 +5,12 @@ export class BannerController {
   static async addBanner(req: Request, res: Response, next: NextFunction) {
     const path = req.file.path;
     try {
-      const data = {
+      let data: any = {
         banner: path,
       };
+      if (req.body.restaurant_id) {
+        data = { ...data, restaurant_id: req.body.restaurant_id };
+      }
       const banner = await new Banner(data).save();
       res.send(banner);
     } catch (e) {

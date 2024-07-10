@@ -66,8 +66,12 @@ export class RestaurantController {
     // const METERS_PER_KM = 1000;
     // const EARTH_RADIUS_IN_MILE = 3963.2;
     const EARTH_RADIUS_IN_KM = 6378.1;
+    const perPage = 2;
+    const currentPage = parseInt((req as any).query.page) || 1;
+    const prevPage = currentPage == 1 ? null : currentPage - 1;
+    let nextPage = currentPage + 1;
     try {
-      const restaurants = await Restaurant.find({
+      const restaurants_doc_count = await Restaurant.countDocuments({
         status: "active",
         location: {
           // $nearSphere: {
@@ -85,7 +89,43 @@ export class RestaurantController {
           },
         },
       });
-      res.send(restaurants);
+      const totalPages = Math.ceil(restaurants_doc_count / perPage); // 5.05 = 6 & -5.05 = 5
+      if (totalPages == 0 || totalPages == currentPage) {
+        nextPage = null;
+      }
+      if (totalPages < currentPage) {
+        // throw new Error("No more Restaurants available");
+        throw "No more Restaurants available";
+      }
+      const restaurants = await Restaurant.find({
+        status: "active",
+        location: {
+          // $nearSphere: {
+          //   $geometry: {
+          //     type: "Point",
+          //     coordinates: [parseFloat(data.lng), parseFloat(data.lat)],
+          //   },
+          //   $maxDistance: data.radius * METERS_PER_KM,
+          // },
+          $geoWithin: {
+            $centerSphere: [
+              [parseFloat(data.lng), parseFloat(data.lat)],
+              parseFloat(data.radius) / EARTH_RADIUS_IN_KM,
+            ],
+          },
+        },
+      })
+        .skip(currentPage * perPage - perPage)
+        .limit(perPage);
+      // res.send(restaurants);
+      res.json({
+        restaurants,
+        perPage,
+        currentPage,
+        prevPage,
+        nextPage,
+        totalPages,
+      });
     } catch (e) {
       next(e);
     }
@@ -101,8 +141,12 @@ export class RestaurantController {
     // const METERS_PER_KM = 1000;
     // const EARTH_RADIUS_IN_MILE = 3963.2;
     const EARTH_RADIUS_IN_KM = 6378.1;
+    const perPage = 2;
+    const currentPage = parseInt((req as any).query.page) || 1;
+    const prevPage = currentPage == 1 ? null : currentPage - 1;
+    let nextPage = currentPage + 1;
     try {
-      const restaurants = await Restaurant.find({
+      const restaurants_doc_count = await Restaurant.countDocuments({
         status: "active",
         name: { $regex: data.name, $options: "i" },
         location: {
@@ -121,7 +165,44 @@ export class RestaurantController {
           },
         },
       });
-      res.send(restaurants);
+      const totalPages = Math.ceil(restaurants_doc_count / perPage); // 5.05 = 6 & -5.05 = 5
+      if (totalPages == 0 || totalPages == currentPage) {
+        nextPage = null;
+      }
+      if (totalPages < currentPage) {
+        // throw new Error("No more Restaurants available");
+        throw "No more Restaurants available";
+      }
+      const restaurants = await Restaurant.find({
+        status: "active",
+        name: { $regex: data.name, $options: "i" },
+        location: {
+          // $nearSphere: {
+          //   $geometry: {
+          //     type: "Point",
+          //     coordinates: [parseFloat(data.lng), parseFloat(data.lat)],
+          //   },
+          //   $maxDistance: data.radius * METERS_PER_KM,
+          // },
+          $geoWithin: {
+            $centerSphere: [
+              [parseFloat(data.lng), parseFloat(data.lat)],
+              parseFloat(data.radius) / EARTH_RADIUS_IN_KM,
+            ],
+          },
+        },
+      })
+        .skip(currentPage * perPage - perPage)
+        .limit(perPage);
+      // res.send(restaurants);
+      res.json({
+        restaurants,
+        perPage,
+        currentPage,
+        prevPage,
+        nextPage,
+        totalPages,
+      });
     } catch (e) {
       next(e);
     }
