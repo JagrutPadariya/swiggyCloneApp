@@ -4,6 +4,7 @@ import User from "../models/User";
 import { Utils } from "../utils/Utils";
 import { Request, Response, NextFunction } from "express";
 
+
 export class RestaurantController {
   static async addRestaurant(req: Request, res: Response, next: NextFunction) {
     const restaurant = req.body;
