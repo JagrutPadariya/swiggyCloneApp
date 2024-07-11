@@ -31,13 +31,16 @@ export class UserController {
       let user = await new User(data).save();
       const payload = {
         // user_id: user._id,
-        aud: user._id,
+        // aud: user._id,
         email: user.email,
         type: user.type,
       };
-      const token = Jwt.jwtSign(payload);
+      // filter user data to pass in frontend
+      const access_token = Jwt.jwtSign(payload, user._id);
+      const refresh_token = Jwt.jwtSignRefreshToken(payload, user._id);
       res.json({
-        token: token,
+        token: access_token,
+        refreshToken: refresh_token,
         user: user,
       });
       // send email to user for verification
@@ -129,13 +132,15 @@ export class UserController {
       await Utils.comparePassword(data);
       const payload = {
         // user_id: user._id,
-        aud: user._id,
+        // aud: user._id,
         email: user.email,
         type: user.type,
       };
-      const token = Jwt.jwtSign(payload);
+      const access_token = Jwt.jwtSign(payload, user._id);
+      const refresh_token = Jwt.jwtSignRefreshToken(payload, user._id);
       res.json({
-        token: token,
+        token: access_token,
+        refreshToken: refresh_token,
         user: user,
       });
     } catch (e) {
@@ -272,13 +277,15 @@ export class UserController {
         { new: true }
       );
       const payload = {
-        aud: user.aud,
+        // aud: user.aud,
         email: updatedUser.email,
         type: updatedUser.type,
       };
-      const token = Jwt.jwtSign(payload);
+      const access_token = Jwt.jwtSign(payload, user.aud);
+      const refresh_token = Jwt.jwtSignRefreshToken(payload, user.aud);
       res.json({
-        token: token,
+        token: access_token,
+        refreshToken: refresh_token,
         user: updatedUser,
       });
       // send email to user for updated email verification
@@ -288,6 +295,36 @@ export class UserController {
         html: `<h1>Your Otp is ${verification_token}</h1>`,
       });
     } catch (e) {
+      next(e);
+    }
+  }
+
+  static async getNewToken(req, res, next) {
+    const refreshToken = req.body.refreshToken;
+    try {
+      const decoded_data = await Jwt.jwtVerifyRefreshToken(refreshToken);
+      if (decoded_data) {
+        const payload = {
+          // user_id: decoded_data.aud,
+          email: decoded_data.email,
+          type: decoded_data.type,
+        };
+        const access_token = Jwt.jwtSign(payload, decoded_data.aud);
+        const refresh_token = Jwt.jwtSignRefreshToken(
+          payload,
+          decoded_data.aud
+        );
+        res.json({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        });
+      } else {
+        req.errorStatus = 403;
+        // throw new Error("Access is forbidden");
+        throw "Access is forbidden";
+      }
+    } catch (e) {
+      req.errorStatus = 403;
       next(e);
     }
   }

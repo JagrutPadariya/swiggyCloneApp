@@ -41,7 +41,7 @@ export class GlobalMiddleWare {
     console.log(user);
     console.log("-------------------User-------------------");
     if (user.type !== "user") {
-      req.errorStatus = 401;
+      // req.errorStatus = 401;
       next(new Error("You are an Unauthorised User"));
     }
     next();

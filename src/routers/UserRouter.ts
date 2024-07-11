@@ -33,11 +33,7 @@ class UserRouter {
       GlobalMiddleWare.checkError,
       UserController.verifyResetPasswordToken
     );
-    this.router.get(
-      "/profile",
-      GlobalMiddleWare.auth,
-      UserController.profile
-    );
+    this.router.get("/profile", GlobalMiddleWare.auth, UserController.profile);
   }
 
   postRoutes() {
@@ -52,6 +48,12 @@ class UserRouter {
       UserValidators.signup(),
       GlobalMiddleWare.checkError,
       UserController.signup
+    );
+    this.router.post(
+      "/refresh_token",
+      UserValidators.checkRefreshToken(),
+      GlobalMiddleWare.checkError,
+      UserController.getNewToken
     );
   }
 

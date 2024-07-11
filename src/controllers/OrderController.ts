@@ -62,7 +62,7 @@ export class OrderController {
         // throw new Error("No more Orders available");
         throw "No more Orders available";
       }
-      const orders = await Order.find({ user_id }, { user_id: 0, __v: 0 })
+      const orders = await Order.find({ user_id }, { user_id: 0, _v: 0 })
         .skip(currentPage * perPage - perPage)
         .limit(perPage)
         .sort({ created_at: -1 })
