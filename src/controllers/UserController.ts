@@ -1,6 +1,7 @@
 import User from "../models/User";
 import { Jwt } from "../utils/Jwt";
 import { NodeMailer } from "../utils/NodeMailer";
+import { Redis } from "../utils/Redis";
 import { Utils } from "../utils/Utils";
 import { Request, Response, NextFunction } from "express";
 
@@ -47,7 +48,7 @@ export class UserController {
       };
       // filter user data to pass in frontend
       const access_token = Jwt.jwtSign(payload, user._id);
-      const refresh_token = Jwt.jwtSignRefreshToken(payload, user._id);
+      const refresh_token = await Jwt.jwtSignRefreshToken(payload, user._id);
       res.json({
         token: access_token,
         refreshToken: refresh_token,
@@ -156,7 +157,7 @@ export class UserController {
         type: user.type,
       };
       const access_token = Jwt.jwtSign(payload, user._id);
-      const refresh_token = Jwt.jwtSignRefreshToken(payload, user._id);
+      const refresh_token = await Jwt.jwtSignRefreshToken(payload, user._id);
 
       const user_data = {
         email: user.email,
@@ -354,7 +355,7 @@ export class UserController {
         type: updatedUser.type,
       };
       const access_token = Jwt.jwtSign(payload, user.aud);
-      const refresh_token = Jwt.jwtSignRefreshToken(payload, user.aud);
+      const refresh_token = await Jwt.jwtSignRefreshToken(payload, user.aud);
       res.json({
         token: access_token,
         refreshToken: refresh_token,
@@ -371,10 +372,10 @@ export class UserController {
     }
   }
 
-  static async getNewToken(req, res, next) {
-    const refreshToken = req.body.refreshToken;
+  static async getNewToken(req: Request, res: Response, next: NextFunction) {
+    // const refreshToken = req.body.refreshToken;
+    const decoded_data = (req as any).user;
     try {
-      const decoded_data = await Jwt.jwtVerifyRefreshToken(refreshToken);
       if (decoded_data) {
         const payload = {
           // user_id: decoded_data.aud,
@@ -382,7 +383,7 @@ export class UserController {
           type: decoded_data.type,
         };
         const access_token = Jwt.jwtSign(payload, decoded_data.aud);
-        const refresh_token = Jwt.jwtSignRefreshToken(
+        const refresh_token = await Jwt.jwtSignRefreshToken(
           payload,
           decoded_data.aud
         );
@@ -391,12 +392,31 @@ export class UserController {
           refreshToken: refresh_token,
         });
       } else {
-        req.errorStatus = 403;
+        (req as any).errorStatus = 403;
         // throw new Error("Access is forbidden");
         throw "Access is forbidden";
       }
     } catch (e) {
-      req.errorStatus = 403;
+      (req as any).errorStatus = 403;
+      next(e);
+    }
+  }
+
+  static async logout(req: Request, res: Response, next: NextFunction) {
+    const refreshToken = req.body.refreshToken;
+    const decoded_data = (req as any).user;
+    try {
+      if (decoded_data) {
+        // delete refresh token from redis database
+        await Redis.deletekey(decoded_data.aud);
+        res.json({ succes: true });
+      } else {
+        (req as any).errorStatus = 403;
+        // throw new Error("Access is forbidden");
+        throw "Access is forbidden";
+      }
+    } catch (e) {
+      (req as any).errorStatus = 403;
       next(e);
     }
   }

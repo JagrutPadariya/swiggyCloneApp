@@ -35,6 +35,29 @@ export class GlobalMiddleWare {
     }
   }
 
+  static async decodeRefreshToken(req, res, next) {
+    const refreshToken = req.body.refreshToken;
+    try {
+      if (!refreshToken) {
+        req.errorStatus = 403;
+        next(new Error("Access is forbidden! User doesn't exist1"));
+      }
+      const decoded = await Jwt.jwtVerifyRefreshToken(refreshToken);
+      req.user = decoded;
+      console.log(
+        "------------------------------------------Middleware Decoding JWT------------------------------"
+      );
+      console.log(JSON.stringify(decoded));
+      console.log(
+        "------------------------------------------Middleware Decoding JWT------------------------------"
+      );
+      next();
+    } catch (e) {
+      req.errorStatus = 403;
+      next(new Error("Your Session is Expired or You are an Invalid User! Please login again..."));
+    }
+  }
+
   static adminRole(req, res, next) {
     const user = req.user;
     console.log("-------------------User-------------------");

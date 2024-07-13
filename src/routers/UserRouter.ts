@@ -44,6 +44,12 @@ class UserRouter {
       UserController.login
     );
     this.router.post(
+      "/logout",
+      GlobalMiddleWare.auth,
+      GlobalMiddleWare.decodeRefreshToken,
+      UserController.logout
+    );
+    this.router.post(
       "/signup",
       UserValidators.signup(),
       GlobalMiddleWare.checkError,
@@ -51,8 +57,7 @@ class UserRouter {
     );
     this.router.post(
       "/refresh_token",
-      UserValidators.checkRefreshToken(),
-      GlobalMiddleWare.checkError,
+      GlobalMiddleWare.decodeRefreshToken,
       UserController.getNewToken
     );
   }
