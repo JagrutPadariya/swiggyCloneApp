@@ -18,7 +18,7 @@ class RestaurantRouter {
 
   getRoutes() {
     this.router.get(
-      "/",
+      "/allRestaurants",
       GlobalMiddleWare.auth,
       GlobalMiddleWare.adminRole,
       RestaurantController.getRestaurants

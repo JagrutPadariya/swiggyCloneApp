@@ -17,7 +17,7 @@ class BannerRouter {
   }
 
   getRoutes() {
-    this.router.get("/", GlobalMiddleWare.auth, BannerController.getBanners);
+    this.router.get("/allBanners", GlobalMiddleWare.auth, BannerController.getBanners);
   }
 
   postRoutes() {

@@ -42,7 +42,7 @@ export class Server {
     });
   }
 
-  connectRedis() {
+  async connectRedis() {
     Redis.connectToRedis();
   }
 

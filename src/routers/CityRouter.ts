@@ -16,7 +16,7 @@ class CityRouter {
   }
 
   getRoutes() {
-    this.router.get("/", CityController.getCities);
+    this.router.get("/allCities", CityController.getCities);
   }
 
   postRoutes() {
