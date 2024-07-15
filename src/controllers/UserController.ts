@@ -172,7 +172,7 @@ export class UserController {
       res.json({
         token: access_token,
         refreshToken: refresh_token,
-        user: user,
+        user: user_data,
       });
     } catch (e) {
       next(e);

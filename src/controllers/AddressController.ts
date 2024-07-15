@@ -48,6 +48,17 @@ export class AddressController {
       const address_doc_count = await Address.countDocuments({
         user_id: user_id,
       });
+      // send empty array if no document on filterquery exists
+      if (!address_doc_count) {
+        res.json({
+          addresses: [],
+          perPage,
+          currentPage,
+          prevPage,
+          nextPage: null,
+          totalPages: 0,
+        });
+      }
       const totalPages = Math.ceil(address_doc_count / perPage); // 5.05 = 6 & -5.05 = 5
       if (totalPages == 0 || totalPages == currentPage) {
         nextPage = null;

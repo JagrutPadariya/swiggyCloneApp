@@ -52,8 +52,13 @@ export class UserValidators {
           })
             .then((user) => {
               if (user) {
-                req.user = user;
-                return true;
+                if (user.type == "user" || user.type == "admin") {
+                  req.user = user;
+                  return true;
+                } else {
+                  // throw new Error("You are not an Authorised User");
+                  throw "You are not an Authorised User";
+                }
               } else {
                 // throw new Error("No User Registered with such Email");
                 throw "No User Registered with such Email";

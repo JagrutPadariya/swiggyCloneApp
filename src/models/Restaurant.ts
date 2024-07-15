@@ -23,6 +23,6 @@ const restaurantSchema = new mongoose.Schema({
   updated_at: { type: Date, required: true, default: new Date() },
 });
 
-// restaurantSchema.index({ location: "2dsphere" }, { background: true });
+restaurantSchema.index({ location: "2dsphere" }, { background: true });
 
 export default model("restaurants", restaurantSchema);

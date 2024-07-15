@@ -4,7 +4,6 @@ import User from "../models/User";
 import { Utils } from "../utils/Utils";
 import { Request, Response, NextFunction } from "express";
 
-
 export class RestaurantController {
   static async addRestaurant(req: Request, res: Response, next: NextFunction) {
     const restaurant = req.body;
@@ -90,6 +89,17 @@ export class RestaurantController {
           },
         },
       });
+      // send empty array if no document on filterquery exists
+      if (!restaurants_doc_count) {
+        res.json({
+          restaurants: [],
+          perPage,
+          currentPage,
+          prevPage,
+          nextPage: null,
+          totalPages: 0,
+        });
+      }
       const totalPages = Math.ceil(restaurants_doc_count / perPage); // 5.05 = 6 & -5.05 = 5
       if (totalPages == 0 || totalPages == currentPage) {
         nextPage = null;
@@ -166,6 +176,17 @@ export class RestaurantController {
           },
         },
       });
+      if (!restaurants_doc_count) {
+        // send empty array if no document on filterquery exists
+        res.json({
+          restaurants: [],
+          perPage,
+          currentPage,
+          prevPage,
+          nextPage: null,
+          totalPages: 0,
+        });
+      }
       const totalPages = Math.ceil(restaurants_doc_count / perPage); // 5.05 = 6 & -5.05 = 5
       if (totalPages == 0 || totalPages == currentPage) {
         nextPage = null;
