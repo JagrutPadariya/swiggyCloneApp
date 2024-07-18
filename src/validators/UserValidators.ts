@@ -204,4 +204,18 @@ export class UserValidators {
   //       }),
   //   ];
   // }
+
+  static userProfilePic(): ValidationChain[] {
+    return [
+      body("profileImages", "Profile image is required").custom(
+        (profileImages, { req }) => {
+          if (req.file) {
+            return true;
+          } else {
+            throw "File not uploaded";
+          }
+        }
+      ),
+    ];
+  }
 }

@@ -70,7 +70,7 @@ class AddressRouter {
 
   deleteRoutes() {
     this.router.delete(
-      "/delete/:id",
+      "/address/:id",
       GlobalMiddleWare.auth,
       AddressController.deleteAddress
     );

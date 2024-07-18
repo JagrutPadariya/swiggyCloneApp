@@ -1,3 +1,5 @@
+import * as moment from "moment";
+import * as ExcelJS from "exceljs";
 import User from "../models/User";
 import { Jwt } from "../utils/Jwt";
 import { NodeMailer } from "../utils/NodeMailer";
@@ -35,6 +37,7 @@ export class UserController {
         email_verified: user.email_verified,
         phone: user.phone,
         name: user.name,
+        photo: user.photo || null,
         type: user.type,
         status: user.status,
         created_at: user.created_at,
@@ -164,6 +167,7 @@ export class UserController {
         email_verified: user.email_verified,
         phone: user.phone,
         name: user.name,
+        photo: user.photo || null,
         type: user.type,
         status: user.status,
         created_at: user.created_at,
@@ -264,6 +268,7 @@ export class UserController {
           email_verified: profile.email_verified,
           phone: profile.phone,
           name: profile.name,
+          photo: profile.photo || null,
           type: profile.type,
           status: profile.status,
           created_at: profile.created_at,
@@ -417,6 +422,73 @@ export class UserController {
       }
     } catch (e) {
       (req as any).errorStatus = 403;
+      next(e);
+    }
+  }
+
+  static async updateUserProfilePic(req, res, next) {
+    const path = req.file.path;
+    const user = req.user;
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        user.aud,
+        {
+          photo: path,
+          updated_at: new Date(),
+        },
+        {
+          new: true,
+          projection: {
+            verification_token: 0,
+            verification_token_time: 0,
+            password: 0,
+            reset_password_token: 0,
+            reset_password_token_time: 0,
+            __v: 0,
+            _id: 0,
+          },
+        }
+      );
+      res.send(updatedUser);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async exportUsersToExcel(req, res, next) {
+    const startDate = moment(new Date()).startOf("month").toDate();
+    const endDate = moment(new Date()).endOf("month").toDate();
+    try {
+      const users = await User.find({
+        created_at: {
+          $gte: startDate,
+          $lte: endDate,
+        },
+        type: "user",
+      });
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("users");
+      worksheet.columns = [
+        { header: "SL NO.", key: "s_no", width: 10 },
+        { header: "NAME", key: "name", width: 10 },
+        { header: "EMAIL", key: "email", width: 10 },
+        { header: "EMAIL VERIFIED", key: "email_verified", width: 10 },
+        { header: "PHONE", key: "phone", width: 10 },
+      ];
+      let count = 1;
+      users.forEach((user: any) => {
+        user.s_no = count;
+        worksheet.addRow(user);
+        count++;
+      });
+
+      worksheet.getRow(1).eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+
+      const data = await workbook.xlsx.writeFile("users.xlsx");
+      res.send("Exported Successfully");
+    } catch (e) {
       next(e);
     }
   }

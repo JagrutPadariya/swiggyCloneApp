@@ -2,6 +2,7 @@ import { Router } from "express";
 import { UserController } from "../controllers/UserController";
 import { UserValidators } from "../validators/UserValidators";
 import { GlobalMiddleWare } from "../middlewares/GlobalMiddleWare";
+import { Utils } from "../utils/Utils";
 
 class UserRouter {
   public router: Router;
@@ -34,6 +35,12 @@ class UserRouter {
       UserController.verifyResetPasswordToken
     );
     this.router.get("/profile", GlobalMiddleWare.auth, UserController.profile);
+    this.router.get(
+      "/exportToExcel",
+      GlobalMiddleWare.auth,
+      GlobalMiddleWare.adminRole,
+      UserController.exportUsersToExcel
+    );
   }
 
   postRoutes() {
@@ -92,7 +99,16 @@ class UserRouter {
     );
   }
 
-  putRoutes() {}
+  putRoutes() {
+    this.router.put(
+      "/update/profilePic",
+      GlobalMiddleWare.auth,
+      new Utils().multer.single("profileImages"),
+      UserValidators.userProfilePic(),
+      GlobalMiddleWare.checkError,
+      UserController.updateUserProfilePic
+    );
+  }
 
   deleteRoutes() {}
 }
